@@ -29,26 +29,37 @@ where
     delimited(multispace0, inner, multispace0)
 }
 
+// 先頭から0個以上の空白文字列を削除し、以降の文字列を返す
 pub fn ws(input: &str) -> IResult<&str, &str> {
     multispace0(input)
 }
 
+// "func"をパースする
+// "func"の前後の0個以上の空白文字列を削除し、以降の文字列を返す
 pub fn func(input: &str) -> IResult<&str, &str> {
     bws(tag("func"))(input)
 }
 
+// "param"をパースする
+// "param"の前後の0個以上の空白文字列を削除し、以降の文字列を返す
 pub fn param(input: &str) -> IResult<&str, &str> {
     bws(tag("param"))(input)
 }
 
+// "result"をパースする
+// "result"の前後の0個以上の空白文字列を削除し、以降の文字列を返す
 pub fn result(input: &str) -> IResult<&str, &str> {
     bws(tag("result"))(input)
 }
 
+// "export"をパースする
+// "export"の前後の0個以上の空白文字列を削除し、以降の文字列を返す
 pub fn export(input: &str) -> IResult<&str, &str> {
     bws(tag("export"))(input)
 }
 
+// "module"をパースする
+// "module"の前後の0個以上の空白文字列を削除し、以降の文字列を返す
 pub fn module(input: &str) -> IResult<&str, &str> {
     bws(tag("module"))(input)
 }
@@ -58,9 +69,22 @@ mod tests {
     use super::*;
 
     #[test]
+    fn pt_parse() {
+        assert_eq!(pt(module)("(module)"), Ok(("", "module")));
+        assert_eq!(pt(module)("( module )"), Ok(("", "module")));
+    }
+
+    #[test]
     fn func_parse() {
         assert_eq!(func("func"), Ok(("", "func")));
         assert_eq!(func("func foobar"), Ok(("foobar", "func")));
+        assert_eq!(
+            func("func $add (param $lhs i32) (param $rhs i32) (result i32)"),
+            Ok((
+                "$add (param $lhs i32) (param $rhs i32) (result i32)",
+                "func"
+            ))
+        );
         assert!(func("notfunc").is_err());
     }
 
@@ -95,11 +119,8 @@ mod tests {
     fn bws_parse() {
         assert_eq!(bws(param)(" param "), Ok(("", "param")));
         assert_eq!(bws(param)(" param123"), Ok(("123", "param")));
-        assert_eq!(bws(param)("param123"), Ok(("param123", "")));
-        assert_eq!(bws(param)("param"), Ok(("param", "")));
-        assert_eq!(
-            bws(param)("p a r a m"),
-            Err(nom::Err::Error(("p a r a m", nom::error::ErrorKind::Tag)))
-        );
+        assert_eq!(bws(param)("param"), Ok(("", "param")));
+        assert_eq!(bws(param)("param      $lhs i32"), Ok(("$lhs i32", "param")));
+        assert!(bws(param)("p a r a m").is_err());
     }
 }

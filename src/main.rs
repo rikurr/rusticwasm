@@ -1,5 +1,5 @@
 use nom::bytes::complete::tag;
-use rusticwasm::wat::token::bws;
+use rusticwasm::wat::token::{bws, func, param, ws};
 
 fn main() {
     // test.watを読み込む
@@ -8,12 +8,15 @@ fn main() {
     // println!("{}", wat_program);
 
     fn parser(input: &str) -> nom::IResult<&str, &str> {
-        bws(tag("hello"))(input)
+        bws(param)(input)
     }
 
-    let (st, er) = parser(" hello   ").unwrap();
+    let a = parser("p a r a m");
 
-    println!("st:{}, er:{}", st, er);
+    println!("a:{:?}", a);
+
+    let aa = func("  func $add (param $lhs i32) (param $rhs i32) (result i32)");
+    println!("aa:{:?}", aa);
 
     // let input = /* WATプログラムの文字列 */;
 
