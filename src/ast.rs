@@ -32,16 +32,9 @@ pub type Type = FuncType;
 // https://webassembly.github.io/spec/core/syntax/modules.html#functions
 #[derive(Debug, PartialEq, Clone, Eq)]
 pub struct Func {
-    pub name: String,
-    pub params: Vec<Param>,
-    pub result: Option<ValueType>,
+    pub f_type: u32,
+    pub locals: Vec<ValueType>,
     pub body: Vec<Instruction>,
-}
-
-#[derive(Debug, PartialEq, Clone, Eq)]
-pub struct Param {
-    pub name: Option<String>,
-    pub ty: ValueType,
 }
 
 // https://webassembly.github.io/spec/core/syntax/instructions.html
