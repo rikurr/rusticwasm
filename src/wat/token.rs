@@ -1,12 +1,10 @@
 use std::ops::RangeFrom;
 
 use nom::{
-    bytes::{complete::is_a, streaming::tag},
-    character::complete::{alphanumeric1, char, multispace0},
-    combinator::recognize,
+    bytes::streaming::tag,
+    character::complete::{char, multispace0},
     error::ParseError,
-    multi::many1,
-    sequence::{delimited, pair},
+    sequence::delimited,
     AsChar, IResult, InputIter, InputTakeAtPosition, Parser, Slice,
 };
 

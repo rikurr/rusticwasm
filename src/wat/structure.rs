@@ -19,7 +19,7 @@ pub type FuncType = (StackType, StackType);
 pub type Type = FuncType;
 
 // Func
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 pub struct Func {
     pub name: String,
     pub params: Vec<Param>,
@@ -27,13 +27,13 @@ pub struct Func {
     pub body: Vec<Instruction>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 pub struct Param {
     pub name: Option<String>,
     pub ty: ValueType,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 pub enum Instruction {
     LocalGet(String),
     LocalSet(String),
@@ -41,13 +41,13 @@ pub enum Instruction {
 }
 
 // Export
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 pub struct Export {
     pub name: String,
     pub desc: ExportDesc,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 pub enum ExportDesc {
     Func(u32),
     Table(u32),
