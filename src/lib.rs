@@ -1,1 +1,2 @@
-mod wat;
+mod ast;
+pub mod wat;

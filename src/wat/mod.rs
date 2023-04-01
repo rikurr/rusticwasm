@@ -1,5 +1,5 @@
 pub(crate) mod context;
-pub(crate) mod structure;
-pub(crate) mod token;
-pub(crate) mod types;
-pub(crate) mod values;
+pub mod instructions;
+pub mod token;
+pub mod types;
+pub mod values;

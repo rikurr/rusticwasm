@@ -12,6 +12,10 @@ use nom::{
     IResult,
 };
 
+// 仕様
+// https://webassembly.github.io/spec/core/text/values.html
+
+// https://webassembly.github.io/spec/core/text/values.html#text-id
 pub fn id(input: &str) -> IResult<&str, &str> {
     let additional_chars = "!#$%&′∗+−./:<=>?@∖^_`|~";
     let id_char = alt((alphanumeric1, is_a(additional_chars)));

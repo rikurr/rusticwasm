@@ -1,7 +1,5 @@
-use super::{
-    structure::{Export, Func, FuncType, Type},
-    types::Index,
-};
+use super::types::Index;
+use crate::ast::{Export, Func, FuncType, Type};
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Context {

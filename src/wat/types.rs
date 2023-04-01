@@ -9,14 +9,10 @@ use nom::{
     IResult,
 };
 
+use crate::ast::{FuncType, ValueType};
 use crate::wat::{token, types};
 
-use super::{
-    context::Context,
-    structure::{FuncType, ValueType},
-    token::bws,
-    values,
-};
+use super::{context::Context, token::bws, values};
 
 pub enum Index {
     Idx(usize),

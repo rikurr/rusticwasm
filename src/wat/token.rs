@@ -8,6 +8,8 @@ use nom::{
     AsChar, IResult, InputIter, InputTakeAtPosition, Parser, Slice,
 };
 
+// https://webassembly.github.io/spec/core/text/lexical.html#tokens
+
 pub fn pt<I, O, E: ParseError<I>, G>(inner: G) -> impl FnMut(I) -> IResult<I, O, E>
 where
     G: Parser<I, O, E>,
@@ -17,6 +19,7 @@ where
     delimited(char('('), inner, char(')'))
 }
 
+// 先頭と末尾の空白文字列を削除し、innerで指定したパーサーでその間の文字列を返す
 pub fn bws<I, O, E: ParseError<I>, G>(inner: G) -> impl FnMut(I) -> IResult<I, O, E>
 where
     G: Parser<I, O, E>,
@@ -86,5 +89,17 @@ mod tests {
     fn module_parse() {
         assert_eq!(module(" module "), Ok(("", "module")));
         assert!(module("nomodule").is_err());
+    }
+
+    #[test]
+    fn bws_parse() {
+        assert_eq!(bws(param)(" param "), Ok(("", "param")));
+        assert_eq!(bws(param)(" param123"), Ok(("123", "param")));
+        assert_eq!(bws(param)("param123"), Ok(("param123", "")));
+        assert_eq!(bws(param)("param"), Ok(("param", "")));
+        assert_eq!(
+            bws(param)("p a r a m"),
+            Err(nom::Err::Error(("p a r a m", nom::error::ErrorKind::Tag)))
+        );
     }
 }
