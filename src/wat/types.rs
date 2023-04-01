@@ -14,10 +14,13 @@ use crate::wat::{token, types};
 
 use super::{context::Context, token::bws, values};
 
+// 符号無し整数値か"$add"のような識別子
 pub enum Index {
     Idx(usize),
     Id(String),
 }
+
+// 文字列をIndex型に変換する
 pub fn index(input: &str) -> IResult<&str, Index> {
     let idx = map(values::u32, |u| Index::Idx(u as usize));
     let id = map(values::id, |id| Index::Id(id.to_string()));

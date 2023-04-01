@@ -10,6 +10,7 @@ use nom::{
 
 // https://webassembly.github.io/spec/core/text/lexical.html#tokens
 
+// 前後の"("と")"を削除し、innerで指定したパーサーの結果を返す
 pub fn pt<I, O, E: ParseError<I>, G>(inner: G) -> impl FnMut(I) -> IResult<I, O, E>
 where
     G: Parser<I, O, E>,
@@ -97,12 +98,12 @@ mod tests {
     #[test]
     fn param_parse() {
         assert_eq!(param("param"), Ok(("", "param")));
-        assert_eq!(param("param123"), Ok(("123", "param")));
+        assert_eq!(param("param $lhs i32"), Ok(("$lhs i32", "param")));
     }
     #[test]
     fn result_parse() {
         assert_eq!(result("result"), Ok(("", "result")));
-        assert_eq!(result("result123"), Ok(("123", "result")));
+        assert_eq!(result("result i32"), Ok(("i32", "result")));
     }
     #[test]
     fn export_parse() {
