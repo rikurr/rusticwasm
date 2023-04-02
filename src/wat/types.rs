@@ -15,18 +15,20 @@ use crate::wat::{token, types};
 use super::{context::Context, token::bws, values};
 
 // 符号無し整数値か"$add"のような識別子
+#[derive(Debug)]
 pub enum Index {
     Idx(usize),
     Id(String),
 }
 
-// 文字列をIndex型に変換する
+// 識別子をIndex型に変換する
 pub fn index(input: &str) -> IResult<&str, Index> {
     let idx = map(values::u32, |u| Index::Idx(u as usize));
     let id = map(values::id, |id| Index::Id(id.to_string()));
     alt((idx, id))(input)
 }
 
+// ValueType型にパースする
 pub fn value_type(input: &str) -> IResult<&str, ValueType> {
     let types = alt((
         value(ValueType::I32, tag("i32")),
@@ -38,36 +40,42 @@ pub fn value_type(input: &str) -> IResult<&str, ValueType> {
 }
 
 pub fn func_type<'a>(input: &'a str, ctx: &mut Rc<RefCell<Context>>) -> IResult<&'a str, FuncType> {
+    // 戻り値とパラメータの型を表す
+    // パラメータには"$lhs"のような識別子を持っている場合がある
     #[derive(Clone)]
     enum PR {
-        R(ValueType),                 // Return type
-        P(ValueType, Option<String>), // Parameter type
+        R(ValueType),                 // 戻り値
+        P(ValueType, Option<String>), // パラメータ
     }
 
-    // Parse a parameter with an optional identifier
+    // オプションの識別子をパースする
     let param = map(
         preceded(
+            // 空白を削除する
             token::ws,
+            // "(param $lhs i32)"のようなパラメータをパースする
             token::pt(tuple((token::param, opt(values::id), types::value_type))),
         ),
         |p| PR::P(p.2, p.1.map(|id| id.to_string())),
     );
 
-    // Parse a result type
+    // 戻り値をパースする
     let result = map(
         preceded(
+            // 空白を削除する
             token::ws,
+            // "(result i32)"のような戻り値をパースする
             token::pt(preceded(token::result, types::value_type)),
         ),
         PR::R,
     );
 
-    // Parse a type "t" that is either a parameter "param" or a result type "result".
+    // パラメータか戻り値のいずれかの値を取得する
     let t = alt((param, result));
+    // パラメータと戻り値をパースする
     let (input, many_t) = many0(t)(input)?;
 
-    // Get all result types from the list
-    // of parsed types.
+    // リストから戻り値を取得し、Vec<ValueType>に変換する
     let results = many_t
         .iter()
         .filter_map(|t| match t {
@@ -76,25 +84,31 @@ pub fn func_type<'a>(input: &'a str, ctx: &mut Rc<RefCell<Context>>) -> IResult<
         })
         .collect::<Vec<ValueType>>();
 
+    // リストからパラメータを取得し、Vec<ValueType>に変換する
     let params = many_t
         .iter()
         .filter_map(|t| match t {
             PR::P(p, id) => {
-                ctx.borrow_mut().locals.push(id.clone());
+                ctx.borrow_mut().locals.push(id.clone()); // idをContextに追加する
                 Some(*p)
             }
             _ => None,
         })
         .collect::<Vec<ValueType>>();
 
+    // 戻り値とパラメータをFuncType型に変換する
     let ft = (params, results);
     Ok((input, ft))
 }
 
 pub fn type_use<'a>(input: &'a str, ctx: &mut Rc<RefCell<Context>>) -> IResult<&'a str, usize> {
     let mut ft = |i| func_type(i, ctx);
+
+    // 文字列をFuncType型にパースする
     let (input, ft) = ft(input)?;
 
+    // FuncType型をContextに追加する
+    // すでに存在する場合は、そのインデックスを返す
     let index = ctx.borrow_mut().upsert_func_type(&ft);
 
     Ok((input, index))

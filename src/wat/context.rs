@@ -90,7 +90,6 @@ impl Context {
                 .expect("Identifier not found"),
         }
     }
-
     // 関数のリストに関数の識別子を追加する
     // 追加した関数のインデックスを返す
     pub fn insert_func_id(&mut self, id: Option<String>) -> usize {

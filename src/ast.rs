@@ -41,8 +41,7 @@ pub struct Func {
 // https://webassembly.github.io/spec/core/text/instructions.html
 #[derive(Debug, PartialEq, Clone, Eq)]
 pub enum Instruction {
-    LocalGet(String),
-    LocalSet(String),
+    LocalGet(usize),
     I32Add,
 }
 

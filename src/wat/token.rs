@@ -67,12 +67,20 @@ pub fn module(input: &str) -> IResult<&str, &str> {
 
 #[cfg(test)]
 mod tests {
+    use nom::sequence::preceded;
+
+    use crate::{ast::ValueType, wat::types::value_type};
+
     use super::*;
 
     #[test]
     fn pt_parse() {
         assert_eq!(pt(module)("(module)"), Ok(("", "module")));
         assert_eq!(pt(module)("( module )"), Ok(("", "module")));
+        assert_eq!(
+            pt(preceded(result, value_type))("(result i32)"),
+            Ok(("", ValueType::I32))
+        );
     }
 
     #[test]
