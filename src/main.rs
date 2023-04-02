@@ -1,22 +1,13 @@
-use nom::bytes::complete::tag;
-use rusticwasm::wat::token::{bws, func, param, ws};
+use rusticwasm::wat;
 
 fn main() {
     // test.watを読み込む
-    // let wat_program = std::fs::read_to_string("test.wat").unwrap();
+    let wat_program = std::fs::read_to_string("test.wat").unwrap();
 
-    // println!("{}", wat_program);
+    // 字句解析
+    let ast = wat::module::module(&wat_program).unwrap();
 
-    fn parser(input: &str) -> nom::IResult<&str, &str> {
-        bws(param)(input)
-    }
-
-    let a = parser("p a r a m");
-
-    println!("a:{:?}", a);
-
-    let aa = func("  func $add (param $lhs i32) (param $rhs i32) (result i32)");
-    println!("aa:{:?}", aa);
+    println!("{:?}", ast);
 
     // let input = /* WATプログラムの文字列 */;
 

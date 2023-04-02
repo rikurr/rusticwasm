@@ -66,13 +66,18 @@ mod tests {
         let mut ctx = Rc::new(RefCell::new(Context::new()));
 
         assert_eq!(
-            instructions("local.get 1", &mut ctx),
+            instructions(
+                "local.get 0
+                local.get 1
+                i32.add)",
+                &mut ctx
+            ),
             Ok((
-                "",
+                ")",
                 vec![
                     Instruction::LocalGet(0),
+                    Instruction::LocalGet(1),
                     Instruction::I32Add,
-                    Instruction::LocalGet(1)
                 ]
             ))
         );

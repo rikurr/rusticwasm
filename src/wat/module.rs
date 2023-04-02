@@ -146,4 +146,68 @@ mod tests {
             }))
         )
     }
+
+    #[test]
+    fn export_parse() {
+        let mut ctx = Rc::new(RefCell::new(Context {
+            funcs: Field {
+                ids: vec![Some("$add".to_string())],
+                list: vec![],
+            },
+            ..Context::new()
+        }));
+        let expected = Export {
+            name: "add".to_string(),
+            desc: ExportDesc::Func(0),
+        };
+        assert_eq!(
+            export("(export \"add\" (func $add))", &mut ctx),
+            Ok(("", expected))
+        );
+        assert_eq!(
+            ctx,
+            Rc::new(RefCell::new(Context {
+                locals: vec![],
+                types: Field::new(),
+                funcs: Field {
+                    ids: vec![Some("$add".to_string())],
+                    list: vec![]
+                },
+                exports: Field {
+                    ids: vec![Some("add".to_string())],
+                    list: vec![Export {
+                        name: "add".to_string(),
+                        desc: ExportDesc::Func(0)
+                    }]
+                }
+            }))
+        )
+    }
+    #[test]
+    fn module_parse() {
+        let wat = "(module
+                (func $add (param $lhs i32) (param $rhs i32) (result i32)
+                  local.get $lhs
+                  local.get $rhs
+                  i32.add)
+                (export \"add\" (func $add))
+            )";
+        let expected = Module {
+            types: vec![(vec![I32, I32], vec![I32])],
+            funcs: vec![Func {
+                f_type: 0,
+                locals: vec![],
+                body: vec![
+                    Instruction::LocalGet(0),
+                    Instruction::LocalGet(1),
+                    Instruction::I32Add,
+                ],
+            }],
+            exports: vec![Export {
+                name: "add".to_string(),
+                desc: ExportDesc::Func(0),
+            }],
+        };
+        assert_eq!(module(&wat), Ok(("", expected)));
+    }
 }
