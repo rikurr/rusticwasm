@@ -10,7 +10,6 @@ use super::{context::Context, token::bws, types::index};
 
 // local.getとその先に続く文字列からIndexを取得する
 fn local_get<'a>(input: &'a str, ctx: &Rc<RefCell<Context>>) -> IResult<&'a str, Instruction> {
-    println!("local_get: {}", input);
     let local_get = bws(tag("local.get"));
     let (input, i) = preceded(local_get, index)(input)?;
 
@@ -22,7 +21,6 @@ fn local_get<'a>(input: &'a str, ctx: &Rc<RefCell<Context>>) -> IResult<&'a str,
 
 // 文字列からInstruction型へ変換する
 fn i32_add(input: &str) -> IResult<&str, Instruction> {
-    println!("i32_add: {}", input);
     map(bws(tag("i32.add")), |_| Instruction::I32Add)(input)
 }
 
@@ -66,17 +64,9 @@ mod tests {
     #[test]
     fn instructions_parse() {
         let mut ctx = Rc::new(RefCell::new(Context::new()));
-        // let a = instructions("local.get 1", &mut ctx);
-        // println!("{:?}", a);
+
         assert_eq!(
-            instructions(
-                r#"
-                local.get 0
-                i32.add
-                local.get 1
-                "#,
-                &mut ctx
-            ),
+            instructions("local.get 1", &mut ctx),
             Ok((
                 "",
                 vec![

@@ -21,7 +21,7 @@ pub struct Field<T> {
 }
 
 impl<T> Field<T> {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             ids: Vec::new(),
             list: Vec::new(),
@@ -129,7 +129,7 @@ impl Context {
     }
 
     // エクスポートのリストにエクスポートを追加する
-    pub fn insert_export(&mut self, id: &Option<String>, export: &Export) {
-        self.exports.add((*id).clone(), export.clone());
+    pub fn insert_export(&mut self, name: &Option<String>, export: &Export) {
+        self.exports.add((*name).clone(), export.clone());
     }
 }

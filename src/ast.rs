@@ -5,9 +5,9 @@
 // https://webassembly.github.io/spec/core/syntax/modules.html
 #[derive(Debug, PartialEq)]
 pub struct Module {
-    types: Vec<Type>,
-    funcs: Vec<Func>,
-    exports: Vec<Export>,
+    pub types: Vec<Type>,
+    pub funcs: Vec<Func>,
+    pub exports: Vec<Export>,
 }
 
 // 現在はNumber Typesのみサポート
